@@ -1,5 +1,5 @@
 perricone dashboard to keep track of 
-1) forecast consumption (shipment runrate)
-2) account fill rate
-3) historical actuals v.s. fcst 
-4) future fcst & inventory level
+1) forecast consumption (shipment runrate) [completed]
+2) account fill rate [not started]
+3) historical actuals v.s. fcst [testing]
+4) future fcst & inventory level [not started]
