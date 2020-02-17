@@ -11,14 +11,17 @@ from openpyxl import load_workbook
 import os
 
 #### need to modify every pass####
-mon_name=['December 19']
-rolling_index='Dec Rolling 4 weeks'
+######################################################################################################################
+################### haas been modified to include ORDER QTY, getting ready for FILL RATE calculation #################
+######################################################################################################################
+mon_name=['February 20']
+rolling_index='Feb Rolling 2 weeks'
 
 
 os.chdir("C:/Users/ema/Desktop/projects/consumption_forecast_inventory")
 mtd_shipment=pd.read_excel("IDC shipment Accounts Mapping Tool.xlsx", sheet_name='Pivot Shipment Overview',header=0)
 
-lm_forecast=pd.read_excel('S&OP LM publication.xlsx',sheet_name='Channel Forecast', header=0)
+lm_forecast=pd.read_excel('S&OP LM Publication.xlsx',sheet_name='Channel Forecast', header=0)
 lm_forecast.rename(columns={'\xa0Account\xa0':'Account'}, inplace=True)
 col_names=['Account','Sku','Description']
 
@@ -65,10 +68,13 @@ franchise_map=franchise_mapping[['Sku','Franchise']].drop_duplicates(subset=['Sk
 df_merged=df_merge.merge(franchise_map, how='left', left_on='Item #', right_on='Sku')
                    
 
-filtered_cols=['rolling_index','forecasted_account','Item #','item_description','Franchise','Sum of ShipQty',"".join(str(x) for x in mon_name)]
+#filtered_cols=['rolling_index','forecasted_account','Item #','item_description','Franchise','Sum of ShipQty',"".join(str(x) for x in mon_name)]
+filtered_cols=['rolling_index','forecasted_account','Item #','item_description','Franchise','Sum of ShipQty','Sum of OrderQty',"".join(str(x) for x in mon_name)]
 data_to_load=df_merged[filtered_cols]
-data_to_load.iloc[:,-2:]=data_to_load.iloc[:,-2:].fillna(value=0)            
-                   
+#data_to_load.iloc[:,-2:]=data_to_load.iloc[:,-2:].fillna(value=0)            
+data_to_load.iloc[:,-3:]=data_to_load.iloc[:,-3:].fillna(value=0)                    
+
+
 #book=load_workbook('Consumption_Shipment_Comparison.xlsx')
 #writer = pd.ExcelWriter('Consumption_Shipment_Comparison.xlsx', engine='openpyxl') 
 #writer.book = book
