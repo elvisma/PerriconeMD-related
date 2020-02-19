@@ -2,7 +2,8 @@
 ####### PerriconeMD dashboard ########
 
 # Read Libraries
-#instAll Franchises.packages("devtools") 
+#install.packages("rmarkdown") 
+#install.packages("knitr") 
 #devtools::install_github("tidyverse/readxl")
 #library("xlsx")
 
@@ -21,6 +22,7 @@ library("shinythemes")
 library("shinydashboard")
 library("dplyr")
 library("DT")
+library("knitr")
 
 #setwd("C:/Users/ema/Desktop/projects/Perricone Dashboard")
 SOP_publish_date="from S&OP forecasting publications (updated @ 2/13/2020)"
@@ -215,7 +217,9 @@ ui <- navbarPage("Perricone Dashboard", theme = shinytheme("flatly"),
                                            div(style="display: inline-block;",radioButtons("franchise_variable3", h4(p(strong("Choose Franchise"))),inline=TRUE,
                                                                                            choices=franchise_vector
                                                                                            
-                                           )),
+                                           ))
+                                           
+                                           
                               ),
                               
                               mainPanel(width=10,
@@ -244,6 +248,7 @@ ui <- navbarPage("Perricone Dashboard", theme = shinytheme("flatly"),
                                                                                            choices=franchise_vector
                                                                                            
                                            ))
+                                           
                                            
                               ),
                               
@@ -488,6 +493,8 @@ server <- function(input, output, session){
       hc_add_series(data = MTD_group_function()$`MTD ship`, type = "column", name="MTD shipment",yAxis=0) %>%
       hc_add_series(data = MTD_group_function()$runrate,type='spline', name="MTD runrate",yAxis=1)%>%
       hc_legend(align = 'right', verticalAlign = 'middle', layout = 'vertical', enabled = TRUE) %>%
+      hc_exporting(enabled = TRUE,fallbackToExportServer = F,
+                   filename = "MTD-runrate")%>%
       #hc_legend(enabled = TRUE)%>%
       hc_add_theme(hc_theme_google()) 
   )
@@ -596,6 +603,8 @@ server <- function(input, output, session){
       
       hc_legend(align = 'right', verticalAlign = 'middle', layout = 'vertical', enabled = TRUE) %>%
       hc_rangeSelector(selected = 8) %>%
+      hc_exporting(enabled = TRUE,fallbackToExportServer = F,
+                   filename = "forecasting-performance-chart")%>%
       hc_add_theme(hc_theme_gridlight())
   )
   
@@ -616,6 +625,8 @@ server <- function(input, output, session){
       hc_chart(type = "pie") %>% 
       hc_add_series_labels_values(labels = acctpie_ranking_dollar()$Account, values = acctpie_ranking_dollar()$Revenues)%>% 
       hc_tooltip(pointFormat = paste('${point.y} <br/><b>{point.percentage:.1f}%</b>')) %>%
+      hc_exporting(enabled = TRUE,fallbackToExportServer = F,
+                   filename = "account-dollar-pie-chart")%>%
       hc_title(text = paste(format(input$daterange_variable3[1],'%b %y'),'to',format(input$daterange_variable3[2],"%b %y"),input$acct_variable4,'$ breakdown',sep=' '))
     #paste(format(input$daterange_variable3[1],'%b %y'),'to',format(input$daterange_variable3[2],"%b %y"),'Sell-in Data',sep=' ')
   })
@@ -625,6 +636,8 @@ server <- function(input, output, session){
       hc_chart(type = "pie") %>% 
       hc_add_series_labels_values(labels = acctpie_ranking_qty()$Account, values = acctpie_ranking_qty()$QTY)%>% 
       hc_tooltip(pointFormat = paste('{point.y} <br/><b>{point.percentage:.1f}%</b>')) %>%
+      hc_exporting(enabled = TRUE,fallbackToExportServer = F,
+                   filename = "account-qty-pie-chart")%>%
       hc_title(text = paste(format(input$daterange_variable3[1],'%b %y'),'to',format(input$daterange_variable3[2],"%b %y"),input$acct_variable4,'QTY breakdown',sep=' '))
   })
   
@@ -633,6 +646,8 @@ server <- function(input, output, session){
       hc_chart(type = "pie") %>% 
       hc_add_series_labels_values(labels = franpie_ranking_dollar()$Franchise, values = franpie_ranking_dollar()$Revenues)%>% 
       hc_tooltip(pointFormat = paste('${point.y} <br/><b>{point.percentage:.1f}%</b>')) %>%
+      hc_exporting(enabled = TRUE,fallbackToExportServer = F,
+                   filename = "franchise-dollar-pie-chart")%>%
       hc_title(text = paste(format(input$daterange_variable3[1],'%b %y'),'to',format(input$daterange_variable3[2],"%b %y"),input$franchise_variable4,'$ breakdown',sep=' '))
   })
   
@@ -641,6 +656,8 @@ server <- function(input, output, session){
       hc_chart(type = "pie") %>% 
       hc_add_series_labels_values(labels = franpie_ranking_qty()$Franchise, values = franpie_ranking_qty()$QTY)%>% 
       hc_tooltip(pointFormat = paste('{point.y} <br/><b>{point.percentage:.1f}%</b>')) %>%
+      hc_exporting(enabled = TRUE,fallbackToExportServer = F,
+                   filename = "franchise-qty-pie-chart")%>%
       hc_title(text = paste(format(input$daterange_variable3[1],'%b %y'),'to',format(input$daterange_variable3[2],"%b %y"),input$franchise_variable4,'QTY breakdown',sep=' '))
   })
   
@@ -663,6 +680,8 @@ server <- function(input, output, session){
       hc_add_series(data =if(nrow(skubar_ranking_function())<5) skubar_ranking_function()$`Revenues` else skubar_ranking_function()[1:5,]$`Revenues`, type = "bar",name="Selected Months' Revenues") %>%
       
       hc_legend(align = 'right', verticalAlign = 'middle', layout = 'vertical', enabled = FALSE) %>%
+      hc_exporting(enabled = TRUE,fallbackToExportServer = F,
+                   filename = "top-performers-bars")%>%
       hc_legend(enabled = TRUE)
   })
   
@@ -793,6 +812,8 @@ server <- function(input, output, session){
       
       hc_legend(align = 'right', verticalAlign = 'middle', layout = 'vertical', enabled = FALSE) %>%
       hc_legend(enabled = TRUE)%>%
+      hc_exporting(enabled = TRUE,fallbackToExportServer = F,
+                   filename = "sales-chart-profit")%>%
       hc_add_theme(hc_theme_gridlight())
     #hc_add_theme(hc_theme_google()) 
   )
@@ -833,6 +854,8 @@ server <- function(input, output, session){
       
       hc_legend(align = 'right', verticalAlign = 'middle', layout = 'vertical', enabled = FALSE) %>%
       hc_legend(enabled = TRUE)%>%
+      hc_exporting(enabled = TRUE,fallbackToExportServer = F,
+                   filename = "sales-chart-margin")%>%
       hc_add_theme(hc_theme_gridlight())
     #hc_add_theme(hc_theme_google()) 
   )
@@ -1200,6 +1223,14 @@ server <- function(input, output, session){
     df<-franpie_function()[order(-franpie_function()$`QTY`),]
     return(df)
   })
+  
+  
+  
+  
+  
+  
+  
+  
   
   
 }
