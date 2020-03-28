@@ -26,12 +26,10 @@ library("knitr")
 library("purrr")
 
 #setwd("C:/Users/ema/Desktop/projects/Perricone Dashboard")
-SOP_publish_date="data source: S&OP forecasting publications (updated @ 3/26/2020)"
-IDC_update_date='data source: IDC shipment reports (updated @ 3/22/2020)'
-financial_report_date='data source: financial monthly reports (updated @ 3/25/2020)'
-FR_update_date="data source: B2B Order Fulfillment Reports (updated @ 3/5/2020)"
-
-lag_clarification_date='Lag0 forecast: Mar S&OP;  Lag1 forecast: Feb S&OP'
+SOP_publish_date="from S&OP forecasting publications (updated @ 3/26/2020)"
+IDC_update_date='from IDC shipment reports (updated @ 3/22/2020)'
+financial_report_date='from financial reports (updated @ 3/25/2020)'
+lag_clarification_date='Mar S&OP for Lag0,  Feb S&OP for Lag1'
 
 date_ranges=c("Mar 2020 (in process)","Feb 2020","Jan 2020","Dec 2019","Nov 2019")
 fill_date_ranges=c("Feb 2020","Jan 2020","Dec 2019","Nov 2019")
@@ -407,10 +405,13 @@ ui <- navbarPage("Perricone Dashboard", theme = shinytheme("flatly"),
                                            selectInput("daterange_variable1",h4(p(strong("Date Range:"))),
                                                        date_ranges,
                                                        selected = date_ranges[1]
-                                           )
+                                           ),
+                                           
+                                           
+                                           downloadButton("downloadData","Download")
                               ),
                               mainPanel(width = 9,
-                                        h3("MTD Shipment Run Rate"),
+                                        h3("Rolling MTD shipment (lag 1 forecast)"),
                                         h5(IDC_update_date),
                                         br(),
                                         tabsetPanel(
@@ -425,7 +426,7 @@ ui <- navbarPage("Perricone Dashboard", theme = shinytheme("flatly"),
                                            
                                            actionLink("selectall2","Select/Unselect All Accounts"), 
                                            div(style="display: inline-block;",checkboxGroupInput("acct_variable5"," ",inline=TRUE,B2B_list,
-                                                                                                 c("Int'l"="APAC+LA",'Costco',"Sephora","UK","ULTA"='Ulta','Retail-Other')        
+                                                                                                 c('B2B customers','Amazon','Costco',"Macy's","Sephora","UK","ULTA"='Ulta','Retail-Other')        
                                            )),
                                            hr(),
                                            h4(p(strong("Check by Franchise"))),
@@ -448,12 +449,12 @@ ui <- navbarPage("Perricone Dashboard", theme = shinytheme("flatly"),
                                            )
                               ),
                               mainPanel(width = 9,
-                                        h3("Monthly Orders Fill Rate"),
-                                        h5(FR_update_date),
+                                        h3("Monthly Fill Rate (B2B customers)"),
+                                        h5(IDC_update_date),
                                         br(),
                                         tabsetPanel(
                                           ### bug reason --> cannot put same output under different ui layout
-                                          
+
                                           tabPanel("Fill Rate",fluidRow(highchartOutput("fillrate_chart",height = "480px")), br(),fluidRow(column(width=11,dataTableOutput("fillrate_table",height='380px'))))
                                         ))),
                             hr(),
@@ -1019,6 +1020,18 @@ server <- function(input, output, session){
   
   
   
+  output$downloadData <-downloadHandler(
+    ###### this function only works in the browser window !!!!!!!!! #############
+    filename = function() {
+      paste(input$daterange_variable1,input$acct_variable1, "Shipment runrate.csv", sep = " ")
+    },
+    
+    
+    content = function(file) {
+      write.csv(cbind(MTD_group_function(),SKU=if(is.null(input$sku_variable1))" " else input$sku_variable1,Account=input$acct_variable1),file,row.names = FALSE)
+    }
+  )
+  
   
   output$downloadData2 <-downloadHandler(
     ###### this function only works in the browser window !!!!!!!!! #############
@@ -1379,7 +1392,7 @@ server <- function(input, output, session){
       updateCheckboxGroupInput(session,"franchise_variable5",choices=franchise_list2, inline=TRUE)
     }
   })
-  
+ 
   ########################### copy from here #######################
   output$fillrate_chart <-renderHighchart(
     highchart()%>%
@@ -1410,7 +1423,7 @@ server <- function(input, output, session){
                                  enableMouseTracking = TRUE
       ))%>%
       
-      hc_add_series(data = FR_function()$`Order QTY`, type = "column",  name="Monthly Orders",yAxis=0,color="#6DBEEA") %>%
+      hc_add_series(data = FR_function()$`Order QTY`, type = "column",  name="Monthly Orders",yAxis=0,color="#89CFF0") %>%
       hc_add_series(data = FR_function()$`Fulfill QTY`, type = "column", name="Monthly Fulfillment",yAxis=0,color="#32CD32") %>%
       hc_add_series(data = FR_function()$fillrate,type='spline', name="Monthly Fill Rate",yAxis=1)%>%
       hc_legend(align = 'right', verticalAlign = 'middle', layout = 'vertical', enabled = TRUE) %>%
