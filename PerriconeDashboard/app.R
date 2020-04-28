@@ -26,15 +26,15 @@ library("knitr")
 library("purrr")
 
 #setwd("C:/Users/ema/Desktop/projects/Perricone Dashboard")
-SOP_publish_date="data source: S&OP forecasting publications (updated @ 3/26/2020)"
-IDC_update_date='data source: IDC shipment reports (updated @ 3/22/2020)'
-financial_report_date='data source: financial monthly reports (updated @ 3/25/2020)'
-FR_update_date="data source: B2B Order Fulfillment Reports (updated @ 3/5/2020)"
+SOP_publish_date="data source: S&OP forecasting publications (updated @ 4/21/2020) Lag0: M-0 forecast, Lag1: M-1 forecast, Lag2: M-2 forecast"
+IDC_update_date='data source: IDC shipment reports (updated @ 4/22/2020)'
+financial_report_date='data source: financial monthly reports (updated @ 4/7/2020)'
+FR_update_date="data source: B2B Order Fulfillment Reports (updated @ 4/1/2020)"
 
-lag_clarification_date='Lag0 forecast: Mar S&OP;  Lag1 forecast: Feb S&OP'
+lag_clarification_date='Lag0 forecast: April S&OP forecast;  Lag1 forecast: March S&OP forecast'
 
-date_ranges=c("Mar 2020 (in process)","Feb 2020","Jan 2020","Dec 2019","Nov 2019")
-fill_date_ranges=c("Feb 2020","Jan 2020","Dec 2019","Nov 2019")
+date_ranges=c("Apr 2020 (in process)","Mar 2020","Feb 2020","Jan 2020")
+fill_date_ranges=c("Mar 2020","Feb 2020","Jan 2020")
 
 
 ############################## THRESHOLD #################################
@@ -129,6 +129,7 @@ fill_rate_data_raw <- read_excel("FillRate raw data.xlsx", sheet="Sheet1",col_ty
 
 fill_rate_data <-fill_rate_data_raw[,c('Item #',"Franchise","forecasted_account",'Date Range','item_description',"Order QTY","Fulfill QTY")]
 fill_rate_data$`Item #`<-as.character(fill_rate_data$`Item #`)
+fill_rate_data<-fill_rate_data[which(!is.na(fill_rate_data$`Item #`)),]
 
 ### combine all accounts
 groupAll_fill_rate_data<-group_by(fill_rate_data,`Item #`,Franchise, `Date Range`)
@@ -227,6 +228,125 @@ ui <- navbarPage("Perricone Dashboard", theme = shinytheme("flatly"),
                  ##################################################################################
                  ######################### TESTING START ##########################################
                  ##################################################################################
+                 tabPanel("Monthly Scorecard",
+                          fluidPage(
+                            sidebarLayout(
+                              sidebarPanel(width =3,
+                                           
+                                           
+                                           div(style="display: inline-block;",radioButtons("acct_variable1",h4(p(strong("Choose Account:"))),inline=TRUE,
+                                                                                           choices=list("Company","Int'l"="APAC+LA","Amazon","Bloomingdales","Costco","Dillard's","EC Scott","GR"="Guthy Renker","L&T"="Lord & Taylor","Macy's","NM"="Neiman Marcus","Nordstrom","Other.com","PMD.com","QVC","Sephora","TSC","UK","ULTA"="Ulta","Zulily","NCO","Retail - Other")
+                                                                                           
+                                           )),
+                                           hr(),
+                                           h4(p(strong("Check by Franchise"))),
+                                           actionLink("selectall","Select/Unselect All Franchises"), 
+                                           div(style="display: inline-block;",checkboxGroupInput("franchise_variable1"," ",inline=TRUE,franchise_list,
+                                                                                                 franchise_list[1:length(franchise_list)-1]
+                                                                                                 
+                                           )),
+                                           
+                                           
+                                           h4(p(strong("Check by SKU"))),
+                                           
+                                           
+                                           checkboxInput("checksku_variable1",label = p(strong("1). check to disregard Franchise Selection")), value=FALSE),
+                                           uiOutput("sku_testing"),
+                                           #uiOutput("franchise_drop"),
+                                           selectInput("daterange_variable1",h4(p(strong("Date Range:"))),
+                                                       date_ranges,
+                                                       selected = date_ranges[1]
+                                           )
+                              ),
+                              mainPanel(width = 9,
+                                        h3("MTD Shipment Run Rate"),
+                                        h5(IDC_update_date),
+                                        br(),
+                                        tabsetPanel(
+                                          tabPanel("MTD runrate", fluidRow(splitLayout(cellWidths = c("36%", "64%"),highchartOutput("MTDpie", height = "480px"),highchartOutput("MTDchart", height = "480px")), br(),fluidRow(column(width=10,dataTableOutput("MTDtable",height='380px')))))
+                                          #tabPanel("MTD runrate",fluidRow(highchartOutput("MTDchart",height = "480px")), br(),fluidRow(column(width=11,dataTableOutput("MTDtable",height='380px'))))
+                                        ))),
+                            hr(),
+                            br(),
+                            ######################################### starting from here for fill rate testing ############################################                
+                            sidebarLayout(
+                              sidebarPanel(width =3,
+                                           h4(p(strong("Choose Account:"))),
+                                           
+                                           actionLink("selectall2","Select/Unselect All Accounts"), 
+                                           div(style="display: inline-block;",checkboxGroupInput("acct_variable5"," ",inline=TRUE,B2B_list,
+                                                                                                 c("Int'l"="APAC+LA",'Amazon','Costco',"Sephora","UK","ULTA"='Ulta','Retail-Other')        
+                                           )),
+                                           hr(),
+                                           h4(p(strong("Check by Franchise"))),
+                                           actionLink("selectall3","Select/Unselect All Franchises"), 
+                                           div(style="display: inline-block;",checkboxGroupInput("franchise_variable5"," ",inline=TRUE,franchise_list,
+                                                                                                 franchise_list[1:length(franchise_list)-1]
+                                                                                                 
+                                           )),
+                                           
+                                           
+                                           h4(p(strong("Check by SKU"))),
+                                           
+                                           
+                                           checkboxInput("checksku_variable3",label = p(strong("1). check to disregard Franchise Selection")), value=FALSE),
+                                           uiOutput("sku_testing3"),
+                                           #uiOutput("franchise_drop"),
+                                           selectInput("daterange_variable4",h4(p(strong("Date Range:"))),
+                                                       fill_date_ranges,
+                                                       selected = fill_date_ranges[1]
+                                           )
+                              ),
+                              mainPanel(width = 9,
+                                        h3("Monthly Orders Fill Rate"),
+                                        h5(FR_update_date),
+                                        br(),
+                                        tabsetPanel(
+                                          ### bug reason --> cannot put same output under different ui layout
+                                          
+                                          tabPanel("Fill Rate",fluidRow(highchartOutput("fillrate_chart",height = "480px")), br(),fluidRow(column(width=11,dataTableOutput("fillrate_table",height='380px'))))
+                                        ))),
+                            hr(),
+                            br(),
+                            #######################################################################################################################################################
+                            sidebarLayout(
+                              sidebarPanel(width = 3,
+                                           
+                                           selectInput("acct_variable6",h4(p(strong("Choose Account:"))),
+                                                       B2B_list,
+                                                       selected = B2B_list[1]
+                                           ),
+                                           radioButtons("skucount_variable2",label=h5(p(strong("Choose SKU QTY:"))),
+                                                        choices=list("Top 5"=5,"Top 10"=10,"Top 15"=15,"Top 20"=20),
+                                                        selected = 5
+                                           ),
+                                           selectInput("daterange_variable5",h4(p(strong("Date Range:"))),
+                                                       fill_date_ranges,
+                                                       selected = fill_date_ranges[1]
+                                           )
+                              ),
+                              
+                              mainPanel(width=9,
+                                        h3("Monthly Top Cuts"),
+                                        br(),
+                                        tabsetPanel(
+                                          tabPanel("Top Cuts", dataTableOutput("top_cuts", height = "580px"))
+                                          
+                                        )
+                              )
+                            ),
+                            hr(),
+                            
+                            
+                            
+                            br(),
+                            hr(),
+                            hr(),br()
+                            
+                            ######################################### ending from here for fill rate testing ############################################ 
+                            
+                          )),
+                 
                  tabPanel("Sales Overview",
                           fluidPage( 
                             sidebarLayout(
@@ -368,127 +488,14 @@ ui <- navbarPage("Perricone Dashboard", theme = shinytheme("flatly"),
                                           tabPanel("Top SKUs Down",dataTableOutput("down10", height = "580px"))
                                         )
                               )
-                            ),
-                            
-                            
-                            
-                            
-                            
-                            br(),
-                            hr(),
-                            hr(),br()
-                            
-                          )),
-                 tabPanel("Monthly Scorecard",
-                          fluidPage(
-                            sidebarLayout(
-                              sidebarPanel(width =3,
-                                           
-                                           
-                                           div(style="display: inline-block;",radioButtons("acct_variable1",h4(p(strong("Choose Account:"))),inline=TRUE,
-                                                                                           choices=list("Company","Int'l"="APAC+LA","Amazon","Bloomingdales","Costco","Dillard's","EC Scott","GR"="Guthy Renker","L&T"="Lord & Taylor","Macy's","NM"="Neiman Marcus","Nordstrom","Other.com","PMD.com","QVC","Sephora","TSC","UK","ULTA"="Ulta","Zulily","NCO","Retail - Other")
-                                                                                           
-                                           )),
-                                           hr(),
-                                           h4(p(strong("Check by Franchise"))),
-                                           actionLink("selectall","Select/Unselect All Franchises"), 
-                                           div(style="display: inline-block;",checkboxGroupInput("franchise_variable1"," ",inline=TRUE,franchise_list,
-                                                                                                 c("HP Classics"="High Potency Classics","No Makeup"="No Makeup Skincare","Intensive Pore","VC Ester"="Vitamin C Ester","Supplements","Neuropeptide","Cold Plasma","Essential Fx"="Essential Fx Acyl Glutathione","Hypoallergenic","Mixed Franchise","Acne","Hypo CBD"="Hypoallergenic CBD")
-                                                                                                 
-                                           )),
-                                           
-                                           
-                                           h4(p(strong("Check by SKU"))),
-                                           
-                                           
-                                           checkboxInput("checksku_variable1",label = p(strong("1). check to disregard Franchise Selection")), value=FALSE),
-                                           uiOutput("sku_testing"),
-                                           #uiOutput("franchise_drop"),
-                                           selectInput("daterange_variable1",h4(p(strong("Date Range:"))),
-                                                       date_ranges,
-                                                       selected = date_ranges[1]
-                                           )
-                              ),
-                              mainPanel(width = 9,
-                                        h3("MTD Shipment Run Rate"),
-                                        h5(IDC_update_date),
-                                        br(),
-                                        tabsetPanel(
-                                          tabPanel("MTD runrate",fluidRow(highchartOutput("MTDchart",height = "480px")), br(),fluidRow(column(width=11,dataTableOutput("MTDtable",height='380px'))))
-                                        ))),
-                            hr(),
-                            br(),
-                            ######################################### starting from here for fill rate testing ############################################                
-                            sidebarLayout(
-                              sidebarPanel(width =3,
-                                           h4(p(strong("Choose Account:"))),
-                                           
-                                           actionLink("selectall2","Select/Unselect All Accounts"), 
-                                           div(style="display: inline-block;",checkboxGroupInput("acct_variable5"," ",inline=TRUE,B2B_list,
-                                                                                                 c("Int'l"="APAC+LA",'Costco',"Sephora","UK","ULTA"='Ulta','Retail-Other')        
-                                           )),
-                                           hr(),
-                                           h4(p(strong("Check by Franchise"))),
-                                           actionLink("selectall3","Select/Unselect All Franchises"), 
-                                           div(style="display: inline-block;",checkboxGroupInput("franchise_variable5"," ",inline=TRUE,franchise_list,
-                                                                                                 c("HP Classics"="High Potency Classics","No Makeup"="No Makeup Skincare","Intensive Pore","VC Ester"="Vitamin C Ester","Supplements","Neuropeptide","Cold Plasma","Essential Fx"="Essential Fx Acyl Glutathione","Hypoallergenic","Mixed Franchise","Acne","Hypo CBD"="Hypoallergenic CBD")
-                                                                                                 
-                                           )),
-                                           
-                                           
-                                           h4(p(strong("Check by SKU"))),
-                                           
-                                           
-                                           checkboxInput("checksku_variable3",label = p(strong("1). check to disregard Franchise Selection")), value=FALSE),
-                                           uiOutput("sku_testing3"),
-                                           #uiOutput("franchise_drop"),
-                                           selectInput("daterange_variable4",h4(p(strong("Date Range:"))),
-                                                       fill_date_ranges,
-                                                       selected = fill_date_ranges[1]
-                                           )
-                              ),
-                              mainPanel(width = 9,
-                                        h3("Monthly Orders Fill Rate"),
-                                        h5(FR_update_date),
-                                        br(),
-                                        tabsetPanel(
-                                          ### bug reason --> cannot put same output under different ui layout
-                                          
-                                          tabPanel("Fill Rate",fluidRow(highchartOutput("fillrate_chart",height = "480px")), br(),fluidRow(column(width=11,dataTableOutput("fillrate_table",height='380px'))))
-                                        ))),
-                            hr(),
-                            br(),
-                            #######################################################################################################################################################
-                            sidebarLayout(
-                              sidebarPanel(width = 3,
-                                           
-                                           selectInput("acct_variable6",h4(p(strong("Choose Account:"))),
-                                                       B2B_list,
-                                                       selected = B2B_list[1]
-                                           ),
-                                           radioButtons("skucount_variable2",label=h5(p(strong("Choose SKU QTY:"))),
-                                                        choices=list("Top 5"=5,"Top 10"=10,"Top 15"=15,"Top 20"=20),
-                                                        selected = 5
-                                           ),
-                                           selectInput("daterange_variable5",h4(p(strong("Date Range:"))),
-                                                       fill_date_ranges,
-                                                       selected = fill_date_ranges[1]
-                                           )
-                              ),
-                              
-                              mainPanel(width=9,
-                                        h3("Monthly Top Cuts"),
-                                        br(),
-                                        tabsetPanel(
-                                          tabPanel("Top Cuts", dataTableOutput("top_cuts", height = "580px"))
-                                          
-                                        )
-                              )
                             )
                             
-                            ######################################### ending from here for fill rate testing ############################################ 
+                            
+                            
+                            
                             
                           ))
+                
                  
                  
                  
@@ -550,7 +557,7 @@ server <- function(input, output, session){
   output$MTDchart <-renderHighchart(
     highchart()%>%
       
-      hc_title(text=paste("Shipment Running Log for",input$acct_variable1,sep=' '))%>%
+      hc_title(text=paste("Rolling shipment for",input$acct_variable1,sep=' '))%>%
       #{if(!input$checksku_variable1) hc_title(text="Shipment Running Log (Franchises)") else .}
       hc_subtitle(text=if(!input$checksku_variable1) paste("Selected",length(input$franchise_variable1),"Franchise(s)",sep=' ') else paste(input$sku_variable1,description_function()$description[1],sep=" "))%>%
       
@@ -589,6 +596,16 @@ server <- function(input, output, session){
       #hc_legend(enabled = TRUE)%>%
       hc_add_theme(hc_theme_google()) 
   )
+  
+  output$MTDpie <-renderHighchart({
+    highchart() %>% 
+      hc_chart(type = "pie") %>% 
+      hc_add_series_labels_values(labels = MTD_pie_function()$Account, values = MTD_pie_function()$QTY)%>% 
+      hc_tooltip(pointFormat = paste('{point.y} <br/><b>{point.percentage:.0f}%</b>')) %>%
+      hc_title(text=paste(MTD_pie_function()$MTD[1],"Shipment breakdown",sep=' '))%>%
+      hc_subtitle(text=if(!input$checksku_variable1) paste("Selected",length(input$franchise_variable1),"Franchise(s)",sep=' ') else input$sku_variable1)
+    })  
+  
   output$MTDtable <-DT::renderDataTable(
     # DT::datatable(MTD_group_function(),options = list(searching=FALSE),rownames= FALSE)%>%
     
@@ -1012,7 +1029,7 @@ server <- function(input, output, session){
   
   
   sku_testing2_function <-reactive({
-    if(input$franchise_variable2=='All Franchises'){sku_list2<-unique(combine_data$Sku)}
+    if(input$franchise_variable2=='All Franchises'){sku_list2<-SKU_list}
     else {sku_list2<-unique(combine_data[which(combine_data$Franchise==input$franchise_variable2),1])}
     return(sku_list2)
   })
@@ -1484,6 +1501,34 @@ server <- function(input, output, session){
     return(return_DF)
     
   })
+  
+  MTD_pie_function<-reactive({
+    
+    ship_runrate <- read_excel('ship runrate raw data.xlsx', sheet = input$daterange_variable1, col_types=c("text","text","text","text","text","numeric","numeric"),skip=0)
+    #runrate_group<-group_by(ship_runrate,rolling_index,forecasted_account
+    
+    unique_index=unique(ship_runrate$rolling_index)
+    MTD_index=unique_index[length(unique_index)]
+    if(input$checksku_variable1){
+      pie_df=ship_runrate[which(ship_runrate$rolling_index==MTD_index&ship_runrate$`Item #`==input$sku_variable1),]
+    }
+    else{
+      pie_df=ship_runrate[which(ship_runrate$rolling_index==MTD_index&ship_runrate$Franchise%in%input$franchise_variable1),]
+    }
+    
+    pie_group=group_by(pie_df,forecasted_account)
+    pie_DF<-summarise(pie_group,`MTD ship`=sum(`Ship Qty`),`rolling_index`=first(`rolling_index`))
+    pie_DF<-pie_DF[which(pie_DF$`MTD ship`>0),]
+    pie_DF<-pie_DF[order(-pie_DF$`MTD ship`),]
+    names(pie_DF)=c("Account","QTY","MTD")
+    
+    validate(
+      need(nrow(pie_DF)!=0, "No MTD shipment information")
+    )
+    return(pie_DF)
+  })
+  
+  
   
   
 }
