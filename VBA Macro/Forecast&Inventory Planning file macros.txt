@@ -1,0 +1,1173 @@
+Sub Update_Channels_FcstNum()
+
+'PURPOSE: Determine how many minutes it took for code to completely run
+'SOURCE: www.TheSpreadsheetGuru.com/the-code-vault
+
+Dim StartTime As Double
+Dim MinutesElapsed As String
+
+'Remember time when macro starts
+  StartTime = Timer
+
+'combine SKU's FG & Kits' forecasts
+
+Dim retl, dgtl, intl, brcst, uk, retl_k, dgtl_k, intl_k, brcst_k, uk_k, cmatch, c_all, bycol_all, c, bycol, nofi As Integer
+Dim LastRow, LastColumn As Long
+Dim cname, cname2 As String
+Dim loc As Worksheet
+
+    c_all = 10  ' April 20 (STT window)
+    bycol_all = 28 ' Oct 21 (STT window)
+    'cw_all = 4 'not change
+    
+    Set loc = ThisWorkbook.Sheets("Perricone")
+    
+    
+    retl = 16
+    dgtl = 17
+    intl = 18
+    brcst = 19
+    uk = 20
+    
+    retl_k = 23
+    dgtl_k = 24
+    intl_k = 25
+    brcst_k = 26
+    uk_k = 27
+    
+ 
+  With loc
+    LastRow = .Cells(.Rows.Count, "D").End(xlUp).Row
+    LastColumn = .Range("D4").CurrentRegion.Columns.Count
+    
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+    
+ 
+    
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+    
+    'Retail FG Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+            .Range(.Cells(retl, c), .Cells(retl, c)).Formula = "=IFERROR(VLOOKUP(A" & retl & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            '.Range(.Cells(retl, c), .Cells(retl, c)).FormulaArray = "=IFERROR(INDEX([masterplan_raw.xlsx]Forecast!$A$2:$Y$2500, MATCH(1,([masterplan_raw.xlsx]Forecast!$A$2:$A$2500= D" & retl & ")*([masterplan_raw.xlsx]Forecast!$B$2:$B$2500=G" & retl & "),0),MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0)),"""")"
+            .Range(.Cells(retl, c), .Cells(retl, c)).Copy
+            .Range(.Cells(retl, c), .Cells(retl, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(retl, c), .Cells(retl, c)).Value = 0 Then .Range(.Cells(retl, c), .Cells(retl, c)).Value = ""
+
+       retl = retl + 25
+       nofi = nofi + 1
+      Loop
+      
+      retl = 16
+      nofi = 1
+      c = c + 1
+
+    
+    Loop
+    
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+
+    
+    
+  'Digital FG Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+      
+            .Range(.Cells(dgtl, c), .Cells(dgtl, c)).Formula = "=IFERROR(VLOOKUP(A" & dgtl & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            .Range(.Cells(dgtl, c), .Cells(dgtl, c)).Copy
+            .Range(.Cells(dgtl, c), .Cells(dgtl, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(dgtl, c), .Cells(dgtl, c)).Value = 0 Then .Range(.Cells(dgtl, c), .Cells(dgtl, c)).Value = ""
+
+       dgtl = dgtl + 25
+       nofi = nofi + 1
+      Loop
+      
+      dgtl = 17
+      nofi = 1
+      c = c + 1
+    
+    
+    Loop
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+    
+    
+    
+  'international FG Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+      
+            .Range(.Cells(intl, c), .Cells(intl, c)).Formula = "=IFERROR(VLOOKUP(A" & intl & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            .Range(.Cells(intl, c), .Cells(intl, c)).Copy
+            .Range(.Cells(intl, c), .Cells(intl, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(intl, c), .Cells(intl, c)).Value = 0 Then .Range(.Cells(intl, c), .Cells(intl, c)).Value = ""
+
+       intl = intl + 25
+       nofi = nofi + 1
+      Loop
+      
+      intl = 18
+      nofi = 1
+      c = c + 1
+
+    Loop
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+  
+    
+    
+  'Broadcast FG Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+
+      
+            .Range(.Cells(brcst, c), .Cells(brcst, c)).Formula = "=IFERROR(VLOOKUP(A" & brcst & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            .Range(.Cells(brcst, c), .Cells(brcst, c)).Copy
+            .Range(.Cells(brcst, c), .Cells(brcst, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(brcst, c), .Cells(brcst, c)).Value = 0 Then .Range(.Cells(brcst, c), .Cells(brcst, c)).Value = ""
+
+       brcst = brcst + 25
+       nofi = nofi + 1
+      Loop
+      
+      brcst = 19
+      nofi = 1
+      c = c + 1
+
+    
+    Loop
+    
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+
+    
+    
+  'UK FG Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+     
+      
+            .Range(.Cells(uk, c), .Cells(uk, c)).Formula = "=IFERROR(VLOOKUP(A" & uk & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            .Range(.Cells(uk, c), .Cells(uk, c)).Copy
+            .Range(.Cells(uk, c), .Cells(uk, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(uk, c), .Cells(uk, c)).Value = 0 Then .Range(.Cells(uk, c), .Cells(uk, c)).Value = ""
+
+       uk = uk + 25
+       nofi = nofi + 1
+      Loop
+      
+      uk = 20
+      nofi = 1
+      c = c + 1
+
+    
+    Loop
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+ 
+    
+    
+     'Retail Kit Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+     
+      
+            .Range(.Cells(retl_k, c), .Cells(retl_k, c)).Formula = "=IFERROR(VLOOKUP(A" & retl_k & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            .Range(.Cells(retl_k, c), .Cells(retl_k, c)).Copy
+            .Range(.Cells(retl_k, c), .Cells(retl_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(retl_k, c), .Cells(retl_k, c)).Value = 0 Then .Range(.Cells(retl_k, c), .Cells(retl_k, c)).Value = ""
+
+       retl_k = retl_k + 25
+       nofi = nofi + 1
+      Loop
+      
+      retl_k = 23
+      nofi = 1
+      c = c + 1
+     
+    
+    Loop
+    
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+
+    
+  'digital Kit Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+            .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).Formula = "=IFERROR(VLOOKUP(A" & dgtl_k & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).Copy
+            .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).Value = 0 Then .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).Value = ""
+
+       dgtl_k = dgtl_k + 25
+       nofi = nofi + 1
+      Loop
+      
+      dgtl_k = 24
+      nofi = 1
+      c = c + 1
+
+    
+    Loop
+    
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+
+    
+    
+  'international Kit Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+            .Range(.Cells(intl_k, c), .Cells(intl_k, c)).Formula = "=IFERROR(VLOOKUP(A" & intl_k & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            .Range(.Cells(intl_k, c), .Cells(intl_k, c)).Copy
+            .Range(.Cells(intl_k, c), .Cells(intl_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(intl_k, c), .Cells(intl_k, c)).Value = 0 Then .Range(.Cells(intl_k, c), .Cells(intl_k, c)).Value = ""
+
+       intl_k = intl_k + 25
+       nofi = nofi + 1
+      Loop
+      
+      intl_k = 25
+      nofi = 1
+      c = c + 1
+  
+    
+    Loop
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+
+    
+    
+  'broadcast Kit Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+            .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).Formula = "=IFERROR(VLOOKUP(A" & brcst_k & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).Copy
+            .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).Value = 0 Then .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).Value = ""
+
+       brcst_k = brcst_k + 25
+       nofi = nofi + 1
+      Loop
+      
+      brcst_k = 26
+      nofi = 1
+      c = c + 1
+
+    
+    Loop
+    
+    c = c_all
+    bycol = bycol_all
+    nofi = 1
+
+    
+    
+  'UK Kit Forecast
+    Do While (c < bycol + 1)
+      cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+      cname = cname2 & "" & 4 '4 indicates row 4
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+            .Range(.Cells(uk_k, c), .Cells(uk_k, c)).Formula = "=IFERROR(VLOOKUP(A" & uk_k & ",[masterplan_raw.xlsx]Forecast!$A$2:$Z$2500,MATCH(" & cname & ",[masterplan_raw.xlsx]Forecast!$A$1:$Z$1,0), FALSE),0)"
+            .Range(.Cells(uk_k, c), .Cells(uk_k, c)).Copy
+            .Range(.Cells(uk_k, c), .Cells(uk_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(uk_k, c), .Cells(uk_k, c)).Value = 0 Then .Range(.Cells(uk_k, c), .Cells(uk_k, c)).Value = ""
+
+       uk_k = uk_k + 25
+       nofi = nofi + 1
+      Loop
+      
+      uk_k = 27
+      nofi = 1
+      c = c + 1
+
+    
+    Loop
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+     
+    
+  End With
+  
+  
+'Determine how many seconds code took to run
+  MinutesElapsed = Format((Timer - StartTime) / 86400, "hh:mm:ss")
+
+'Notify user in seconds
+  MsgBox "This code ran successfully in " & MinutesElapsed & " minutes", vbInformation
+
+End Sub
+
+
+Sub update_MTD_consumption()
+'Updating every week to reflect SKU's FG & Kits' MTD consumption rate
+
+Dim r, c, bycol, nofi As Integer
+Dim LastRow, LastColumn As Long
+Dim d As String
+Dim loc As Worksheet
+
+    Set loc = ThisWorkbook.Sheets("Perricone")      'loc=location
+    
+With loc
+  LastRow = .Cells(.Rows.Count, "D").End(xlUp).Row
+  LastColumn = .Range("D1").CurrentRegion.Columns.Count
+
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+  
+    r = 10      'not change
+    c = 10      'Starting Column, April
+    bycol = 10  'Ending Column, April
+    nofi = 1
+  
+
+    Do While (c < bycol + 1)
+        Do While (nofi < ((LastRow - 27) / 25) + 1)
+
+            'For Kits & FG consumption
+            .Range(.Cells(r, c), .Cells(r, c)).Formula = "=IFERROR(VLOOKUP(D" & r & ",[masterplan_raw.xlsx]Consumption!$A$2:$C$500,2, FALSE),0)"
+            .Range(.Cells(r, c), .Cells(r, c)).Copy
+            .Range(.Cells(r, c), .Cells(r, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+            
+             If .Range(.Cells(r, c), .Cells(r, c)).Value = "" Then .Range(.Cells(r, c), .Cells(r, c)).Value = 0
+             
+    
+        r = r + 25
+        nofi = nofi + 1
+        
+        Loop
+    
+    r = 10
+    nofi = 1
+    c = c + 1
+    Loop
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+ End With
+ 
+ 
+End Sub
+
+
+Sub update_OH_available_Inventory()
+'Updating OH available inventory every week
+
+Dim r, c, bycol, nofi As Integer
+Dim LastRow, LastColumn As Long
+Dim d As String
+Dim loc As Worksheet
+
+    Set loc = ThisWorkbook.Sheets("Perricone")      'loc=location
+    
+With loc
+  LastRow = .Cells(.Rows.Count, "D").End(xlUp).Row
+  LastColumn = .Range("D1").CurrentRegion.Columns.Count
+
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+  
+    r = 8      'do not change
+    c = 10      'Starting Column, Apr
+    bycol = 10  'Ending Column, Apr
+    nofi = 1
+
+
+    Do While (c < bycol + 1)
+        Do While (nofi < ((LastRow - 27) / 25) + 1)
+
+            'For Total OH available Inventory
+            .Range(.Cells(r, c), .Cells(r, c)).Formula = "=IFERROR(VLOOKUP(D" & r & ",[masterplan_raw.xlsx]OH_total!$A$2:$C$1000,3, FALSE),0)"
+            .Range(.Cells(r, c), .Cells(r, c)).Copy
+            .Range(.Cells(r, c), .Cells(r, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+            
+             If .Range(.Cells(r, c), .Cells(r, c)).Value = "" Then .Range(.Cells(r, c), .Cells(r, c)).Value = 0
+
+    
+        r = r + 25
+        nofi = nofi + 1
+        
+        Loop
+    
+    r = 8
+    nofi = 1
+    c = c + 1
+    Loop
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+ End With
+ 
+ 
+End Sub
+
+Sub update_OH_reserve_Inventory()
+'Updating OH available inventory every week
+
+Dim r, c, bycol, nofi As Integer
+Dim LastRow, LastColumn As Long
+Dim d As String
+Dim loc As Worksheet
+
+    Set loc = ThisWorkbook.Sheets("Perricone")      'loc=location
+    
+With loc
+  LastRow = .Cells(.Rows.Count, "D").End(xlUp).Row
+  LastColumn = .Range("D1").CurrentRegion.Columns.Count
+
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+  
+    r = 9      'do not change
+    c = 10      'Starting Column, Apr
+    bycol = 10  'Ending Column, Apr
+    nofi = 1
+
+
+    Do While (c < bycol + 1)
+        Do While (nofi < ((LastRow - 27) / 25) + 1)
+
+            'For Total OH available Inventory
+            .Range(.Cells(r, c), .Cells(r, c)).Formula = "=IFERROR(VLOOKUP(D" & r & ",[masterplan_raw.xlsx]OH_total!$A$2:$D$1000,4, FALSE),0)"
+            .Range(.Cells(r, c), .Cells(r, c)).Copy
+            .Range(.Cells(r, c), .Cells(r, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+            
+             If .Range(.Cells(r, c), .Cells(r, c)).Value = "" Then .Range(.Cells(r, c), .Cells(r, c)).Value = 0
+
+    
+        r = r + 25
+        nofi = nofi + 1
+        
+        Loop
+    
+    r = 9
+    nofi = 1
+    c = c + 1
+    Loop
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+ End With
+ 
+ 
+End Sub
+
+
+Sub Update_open_PO_QTY()
+'update incoming PO QTY
+'PURPOSE: Determine how many minutes it took for code to completely run
+'SOURCE: www.TheSpreadsheetGuru.com/the-code-vault
+
+Dim StartTime As Double
+Dim MinutesElapsed As String
+
+'Remember time when macro starts
+  StartTime = Timer
+Dim r, c, bycol, nofi As Integer
+Dim LastRow, LastColumn As Long
+Dim loc As Worksheet
+Dim cname, cname2 As String
+
+    Set loc = ThisWorkbook.Sheets("Perricone")
+        
+With loc
+  LastRow = .Cells(.Rows.Count, "D").End(xlUp).Row
+  LastColumn = .Range("D1").CurrentRegion.Columns.Count
+
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+    
+    r = 7     'do not change this one
+    c = 10     'Starting Column, April
+    bycol = 30 'Ending Column, Dec 2021
+    nofi = 1
+    
+      Do While (c < bycol + 1)
+        Do While (nofi < ((LastRow - 27) / 25) + 1)
+            cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+            cname = cname2 & "" & 4 '4 indicates row 4
+    
+            '.Range(.Cells(r, c), .Cells(r, c)).FormulaArray = "=IFERROR(INDEX([PO_EAST.xlsx]PO_EAST!$A$2:$F$7000, MATCH(1,([PO_EAST.xlsx]PO_EAST!$A$2:$A$7000='FR'!" & cname & ")*([PO_EAST.xlsx]PO_EAST!$B$2:$B$7000='FR'!G" & r & "),0),5),"""")"
+            .Range(.Cells(r, c), .Cells(r, c)).Formula = "=IFERROR(SUMIFS([masterplan_raw.xlsx]open_PO!$D$2:$D$1500,[masterplan_raw.xlsx]open_PO!$A$2:$A$1500,Perricone!D" & r & ",[masterplan_raw.xlsx]open_PO!$B$2:$B$1500," & cname & "),0)"
+            .Range(.Cells(r, c), .Cells(r, c)).Copy
+            .Range(.Cells(r, c), .Cells(r, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+            
+           'If .Range(.Cells(r, c), .Cells(r, c)).Value = "" Then .Range(.Cells(r, c), .Cells(r, c)).Value = 0
+    
+   
+        r = r + 25
+        nofi = nofi + 1
+        Loop
+    
+    r = 7
+    nofi = 1
+    c = c + 1
+    Loop
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+    
+ End With
+'Determine how many seconds code took to run
+  MinutesElapsed = Format((Timer - StartTime) / 86400, "hh:mm:ss")
+
+'Notify user in seconds
+  MsgBox "This code ran successfully in " & MinutesElapsed & " minutes", vbInformation
+ 
+End Sub
+
+
+
+Sub Update_open_PO_Number()
+'update incoming PO QTY
+'PURPOSE: Determine how many minutes it took for code to completely run
+'SOURCE: www.TheSpreadsheetGuru.com/the-code-vault
+
+Dim StartTime As Double
+Dim MinutesElapsed As String
+
+'Remember time when macro starts
+  StartTime = Timer
+  
+Dim r, c, bycol, nofi As Integer
+Dim LastRow, LastColumn As Long
+Dim loc As Worksheet
+Dim cname, cname2 As String
+
+    Set loc = ThisWorkbook.Sheets("Perricone")
+        
+With loc
+  LastRow = .Cells(.Rows.Count, "D").End(xlUp).Row
+  LastColumn = .Range("D1").CurrentRegion.Columns.Count
+
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+    
+    r = 6     'do not change this one
+    c = 10     'Starting Column, April
+    bycol = 30 'Ending Column, Dec 2021
+    nofi = 1
+    
+      Do While (c < bycol + 1)
+        Do While (nofi < ((LastRow - 27) / 25) + 1)
+            cname2 = Replace(Split(Columns(c).Address, ":")(0), "$", "") 'column alphabet
+            cname = cname2 & "" & 4 '4 indicates row 4
+    
+            '.Range(.Cells(r, c), .Cells(r, c)).FormulaArray = "=IFERROR(INDEX([PO_EAST.xlsx]PO_EAST!$A$2:$F$7000, MATCH(1,([PO_EAST.xlsx]PO_EAST!$A$2:$A$7000='FR'!" & cname & ")*([PO_EAST.xlsx]PO_EAST!$B$2:$B$7000='FR'!G" & r & "),0),5),"""")"
+            .Range(.Cells(r, c), .Cells(r, c)).FormulaArray = "=IFERROR(INDEX([masterplan_raw.xlsx]open_PO!$A$2:$D$1500,MATCH(1, ([masterplan_raw.xlsx]open_PO!$A$2:$A$1500=Perricone!D" & r & ")*([masterplan_raw.xlsx]open_PO!$B$2:$B$1500=" & cname & "),0),3),"""")"
+            .Range(.Cells(r, c), .Cells(r, c)).Copy
+            .Range(.Cells(r, c), .Cells(r, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+            
+           'If .Range(.Cells(r, c), .Cells(r, c)).Value = "" Then .Range(.Cells(r, c), .Cells(r, c)).Value = 0
+    
+   
+        r = r + 25
+        nofi = nofi + 1
+        Loop
+    
+    r = 6
+    nofi = 1
+    c = c + 1
+    Loop
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+    
+ End With
+'Determine how many seconds code took to run
+  MinutesElapsed = Format((Timer - StartTime) / 86400, "hh:mm:ss")
+
+'Notify user in seconds
+  MsgBox "This code ran successfully in " & MinutesElapsed & " minutes", vbInformation
+ 
+End Sub
+
+Sub add_BIUB_comments()
+
+Dim BIUB_comment As String
+Dim loc As Worksheet
+Dim r, c, nofi As Integer
+Dim LastRow As Long
+Dim shapeType As Long
+
+    Set loc = ThisWorkbook.Sheets("Perricone")
+    
+With loc
+    
+    r = 8  'NOT CHANGE
+    c = 10  'April column
+    'shapeType = msoShapeFoldedCorner
+    shapeType = msoFreeform
+    LastRow = .Cells(.Rows.Count, "D").End(xlUp).Row
+    nofi = 1
+    
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+    
+    Do While (nofi < (LastRow - 27) / 25 + 1)
+        
+        If Not .Range(.Cells(r, c), .Cells(r, c)).comment Is Nothing Then .Range(.Cells(r, c), .Cells(r, c)).comment.Delete
+        
+        If IsError(Application.Evaluate("VLOOKUP(D" & r & ",[masterplan_raw.xlsx]BIUB!$A:$B,2,FALSE)")) Then
+            .Range(.Cells(r, c), .Cells(r, c)).AddComment ("no BIUB information")
+        Else
+        
+            BIUB_comment = Application.Evaluate("VLOOKUP(D" & r & ",[masterplan_raw.xlsx]BIUB!$A:$B,2,FALSE)")
+            .Range(.Cells(r, c), .Cells(r, c)).AddComment BIUB_comment
+            
+        End If
+        .Range(.Cells(r, c), .Cells(r, c)).comment.Visible = False
+        .Range(.Cells(r, c), .Cells(r, c)).comment.Shape.AutoShapeType = shapeType
+        
+        r = r + 25
+        nofi = nofi + 1
+        c = 10
+        
+    Loop
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+    
+End With
+    
+End Sub
+Sub checkSKU_and_comp()
+
+    Dim rgCriteria As Range, rgData As Range
+    Dim dsh As Worksheet
+    
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+    
+    Set dsh = ThisWorkbook.Sheets("FilterSKUs")
+
+    Set rgCriteria = ThisWorkbook.Worksheets("FilterSKUs").Range("A1").CurrentRegion
+    rgCriteria.Offset(1).ClearContents
+    
+    
+    a = InputBox("Please enter a SKU number", "Check SKU and its corresponding components", "i.e. 7678", 2000, 2000)
+    If StrPtr(a) = 0 Then Exit Sub
+    ThisWorkbook.Worksheets("FilterSKUs").Range("A2").Value = a
+    
+    If ThisWorkbook.Worksheets("BOM").FilterMode = True Then
+        ThisWorkbook.Worksheets("BOM").ShowAllData
+    End If
+    
+    Sheet7.UsedRange.AutoFilter 1, a
+    Sheet7.UsedRange.Columns("B").Copy dsh.Range("A3")
+    
+    
+     UseAdvancedFilterInPlace
+     
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+    
+    MsgBox a + " and its components filtered out"
+
+End Sub
+
+
+
+
+Sub checkSKU_and_kit()
+
+    Dim rgCriteria As Range, rgData As Range
+    Dim dsh As Worksheet
+
+    
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+    
+    Set dsh = ThisWorkbook.Sheets("FilterSKUs")
+    
+    Set rgCriteria = ThisWorkbook.Worksheets("FilterSKUs").Range("A1").CurrentRegion
+    rgCriteria.Offset(1).ClearContents
+    
+    a = InputBox("Please enter a SKU number", "Check SKU and its corresponding kits", "i.e. 51080001", 2000, 2000)
+    If StrPtr(a) = 0 Then Exit Sub
+    ThisWorkbook.Worksheets("FilterSKUs").Range("A2").Value = a
+    
+    If ThisWorkbook.Worksheets("BOM").FilterMode = True Then
+        ThisWorkbook.Worksheets("BOM").ShowAllData
+    End If
+    
+    
+    Sheet7.UsedRange.AutoFilter 2, a
+    Sheet7.UsedRange.Columns("A").Copy dsh.Range("A3")
+    
+    
+     UseAdvancedFilterInPlace
+
+     
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+    MsgBox a + " and its kits filtered out"
+    
+End Sub
+
+
+
+Sub UseAdvancedFilterInPlace()
+    Dim rgCriteria As Range, rgData As Range
+    
+    Set rgData = ThisWorkbook.Worksheets("Perricone").Range("A4:AD20000")
+    Set rgCriteria = ThisWorkbook.Worksheets("FilterSKUs").Range("A1").CurrentRegion
+    rgData.AdvancedFilter xlFilterInPlace, rgCriteria
+    
+End Sub
+
+Sub UseAdvancedFilterInPlace2()
+    Dim rgCriteria2 As Range, rgData As Range
+    
+    Set rgData = ThisWorkbook.Worksheets("Perricone").Range("A4:AD20000")
+    Set rgCriteria2 = ThisWorkbook.Worksheets("FilterSKUs").Range("C1").CurrentRegion
+    rgData.AdvancedFilter xlFilterInPlace, rgCriteria2
+    
+End Sub
+
+
+Sub ClearFilter()
+
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+
+    If ThisWorkbook.Worksheets("Perricone").FilterMode = True Then
+        ThisWorkbook.Worksheets("Perricone").ShowAllData
+        'ThisWorkbook.Worksheets("Perricone").Range("A4:AD20000").AutoFilter
+    'Else: Exit Sub
+    
+    End If
+    ThisWorkbook.Worksheets("Perricone").Range("A4:AD20000").AutoFilter
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+    
+    
+End Sub
+Sub ClearFilter2()
+
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+    
+    
+
+    If ThisWorkbook.Worksheets("Perricone").FilterMode = True Then
+        MsgBox "Unfilter everything...(press OK)"
+        ThisWorkbook.Worksheets("Perricone").ShowAllData
+    
+    End If
+    ThisWorkbook.Worksheets("Perricone").Range("A4:AD20000").AutoFilter
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+    
+    
+End Sub
+
+Sub check_runningOOS_SKU()
+
+    Dim rgCriteria As Range, rgCriteria2 As Range, rgData As Range
+    Dim dsh As Worksheet
+    Dim answer As Integer
+ 
+    answer = MsgBox("Extract SKUs that are projecting to run out of stock within 4-month lead time", vbQuestion + vbYesNo + vbDefaultButton1, "Check OOS SKUs")
+    If answer = vbYes Then
+        MsgBox "Extracting Now...(press OK)"
+    Else
+        Exit Sub
+    End If
+    
+    
+    Set dsh = ThisWorkbook.Sheets("FilterSKUs")
+    
+    Set rgCriteria2 = ThisWorkbook.Worksheets("FilterSKUs").Range("C1").CurrentRegion
+    
+    Set rgCriteria = ThisWorkbook.Worksheets("FilterSKUs").Range("A1").CurrentRegion
+    
+    
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+    
+    rgCriteria.Offset(1).ClearContents
+    
+    'ClearFilter
+    UseAdvancedFilterInPlace2
+    
+    Sheet2.UsedRange.Columns("D").Offset(3).Copy dsh.Range("A1")
+    'ClearFilter
+    UseAdvancedFilterInPlace
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+    
+    
+End Sub
+
+
+Sub goToLink()
+    Dim sWebsite As String
+    Dim answer As Integer
+    answer = MsgBox("Now directing to the Perricone Dashboard?", vbQuestion + vbYesNo + vbDefaultButton1, "Check OOS SKUs")
+    If answer = vbYes Then
+        MsgBox "Please wait...(press OK)"
+    Else
+        Exit Sub
+    End If
+    sWebsite = "https://elvisma.shinyapps.io/PerriconeDashboard/" ' You can change as per your requirement
+    ActiveWorkbook.FollowHyperlink Address:=sWebsite, NewWindow:=True 'Open Website
+End Sub
+
+Sub breakdown_Channels_MTD_consumption()
+
+'PURPOSE: Determine how many minutes it took for code to completely run
+'SOURCE: www.TheSpreadsheetGuru.com/the-code-vault
+
+Dim StartTime As Double
+Dim MinutesElapsed As String
+
+'Remember time when macro starts
+  StartTime = Timer
+
+'combine SKU's FG & Kits' forecasts
+
+Dim retl, dgtl, intl, brcst, uk, retl_k, dgtl_k, intl_k, brcst_k, uk_k, c, nofi As Integer
+Dim LastRow, LastColumn As Long
+Dim loc As Worksheet
+
+
+
+    
+    Set loc = ThisWorkbook.Sheets("Perricone")
+    
+    
+    retl = 16
+    dgtl = 17
+    intl = 18
+    brcst = 19
+    uk = 20
+    
+    retl_k = 23
+    dgtl_k = 24
+    intl_k = 25
+    brcst_k = 26
+    uk_k = 27
+    
+ 
+  With loc
+    LastRow = .Cells(.Rows.Count, "D").End(xlUp).Row
+    LastColumn = .Range("D4").CurrentRegion.Columns.Count
+    
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    Application.DisplayStatusBar = False
+    
+    c = 2 ' not change
+    nofi = 1
+    
+    'Retail FG Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+            .Range(.Cells(retl, c), .Cells(retl, c)).Formula = "=IFERROR(VLOOKUP(A" & retl & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(retl, c), .Cells(retl, c)).Copy
+            .Range(.Cells(retl, c), .Cells(retl, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+
+       retl = retl + 25
+       nofi = nofi + 1
+      Loop
+      
+
+    nofi = 1
+
+    
+    
+  'Digital FG Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+      
+            .Range(.Cells(dgtl, c), .Cells(dgtl, c)).Formula = "=IFERROR(VLOOKUP(A" & dgtl & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(dgtl, c), .Cells(dgtl, c)).Copy
+            .Range(.Cells(dgtl, c), .Cells(dgtl, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(dgtl, c), .Cells(dgtl, c)).Value = 0 Then .Range(.Cells(dgtl, c), .Cells(dgtl, c)).Value = ""
+
+       dgtl = dgtl + 25
+       nofi = nofi + 1
+      Loop
+      
+  
+    nofi = 1
+    
+    
+    
+  'international FG Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+      
+            .Range(.Cells(intl, c), .Cells(intl, c)).Formula = "=IFERROR(VLOOKUP(A" & intl & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(intl, c), .Cells(intl, c)).Copy
+            .Range(.Cells(intl, c), .Cells(intl, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(intl, c), .Cells(intl, c)).Value = 0 Then .Range(.Cells(intl, c), .Cells(intl, c)).Value = ""
+
+       intl = intl + 25
+       nofi = nofi + 1
+      Loop
+      
+    
+    nofi = 1
+  
+    
+    
+  'Broadcast FG Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+
+      
+            .Range(.Cells(brcst, c), .Cells(brcst, c)).Formula = "=IFERROR(VLOOKUP(A" & brcst & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(brcst, c), .Cells(brcst, c)).Copy
+            .Range(.Cells(brcst, c), .Cells(brcst, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(brcst, c), .Cells(brcst, c)).Value = 0 Then .Range(.Cells(brcst, c), .Cells(brcst, c)).Value = ""
+
+       brcst = brcst + 25
+       nofi = nofi + 1
+      Loop
+      
+    nofi = 1
+
+    
+    
+  'UK FG Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+     
+      
+            .Range(.Cells(uk, c), .Cells(uk, c)).Formula = "=IFERROR(VLOOKUP(A" & uk & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(uk, c), .Cells(uk, c)).Copy
+            .Range(.Cells(uk, c), .Cells(uk, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(uk, c), .Cells(uk, c)).Value = 0 Then .Range(.Cells(uk, c), .Cells(uk, c)).Value = ""
+
+       uk = uk + 25
+       nofi = nofi + 1
+      Loop
+      
+      
+    nofi = 1
+ 
+    
+    
+     'Retail Kit Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+      
+
+            .Range(.Cells(retl_k, c), .Cells(retl_k, c)).Formula = "=IFERROR(VLOOKUP(A" & retl_k & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(retl_k, c), .Cells(retl_k, c)).Copy
+            .Range(.Cells(retl_k, c), .Cells(retl_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(retl_k, c), .Cells(retl_k, c)).Value = 0 Then .Range(.Cells(retl_k, c), .Cells(retl_k, c)).Value = ""
+
+       retl_k = retl_k + 25
+       nofi = nofi + 1
+      Loop
+      
+  
+    nofi = 1
+
+    
+  'digital Kit Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+            .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).Formula = "=IFERROR(VLOOKUP(A" & dgtl_k & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).Copy
+            .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).Value = 0 Then .Range(.Cells(dgtl_k, c), .Cells(dgtl_k, c)).Value = ""
+
+       dgtl_k = dgtl_k + 25
+       nofi = nofi + 1
+      Loop
+
+    nofi = 1
+
+    
+    
+  'international Kit Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+            .Range(.Cells(intl_k, c), .Cells(intl_k, c)).Formula = "=IFERROR(VLOOKUP(A" & intl_k & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(intl_k, c), .Cells(intl_k, c)).Copy
+            .Range(.Cells(intl_k, c), .Cells(intl_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(intl_k, c), .Cells(intl_k, c)).Value = 0 Then .Range(.Cells(intl_k, c), .Cells(intl_k, c)).Value = ""
+
+       intl_k = intl_k + 25
+       nofi = nofi + 1
+      Loop
+
+    nofi = 1
+
+    
+    
+  'broadcast Kit Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+            .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).Formula = "=IFERROR(VLOOKUP(A" & brcst_k & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).Copy
+            .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).Value = 0 Then .Range(.Cells(brcst_k, c), .Cells(brcst_k, c)).Value = ""
+
+       brcst_k = brcst_k + 25
+       nofi = nofi + 1
+      Loop
+      
+    nofi = 1
+
+    
+    
+  'UK Kit Forecast
+
+      Do While (nofi < ((LastRow - 27) / 25) + 1)
+            .Range(.Cells(uk_k, c), .Cells(uk_k, c)).Formula = "=IFERROR(VLOOKUP(A" & uk_k & ",[masterplan_raw.xlsx]Consumption_channel!$A$2:$D$1500,3, FALSE),0)"
+            .Range(.Cells(uk_k, c), .Cells(uk_k, c)).Copy
+            .Range(.Cells(uk_k, c), .Cells(uk_k, c)).PasteSpecial (xlPasteValues)
+            Application.CutCopyMode = False
+        
+            'If .Range(.Cells(uk_k, c), .Cells(uk_k, c)).Value = 0 Then .Range(.Cells(uk_k, c), .Cells(uk_k, c)).Value = ""
+
+       uk_k = uk_k + 25
+       nofi = nofi + 1
+      Loop
+      
+    
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+    Application.DisplayStatusBar = True
+     
+    
+  End With
+  
+  
+'Determine how many seconds code took to run
+  MinutesElapsed = Format((Timer - StartTime) / 86400, "hh:mm:ss")
+
+'Notify user in seconds
+  MsgBox "This code ran successfully in " & MinutesElapsed & " minutes", vbInformation
+
+End Sub
+
+
